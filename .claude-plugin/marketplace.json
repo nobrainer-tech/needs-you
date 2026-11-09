@@ -1,0 +1,22 @@
+{
+  "name": "needs-you",
+  "owner": {
+    "name": "NoBrainer Tech",
+    "url": "https://nobrainer.tech"
+  },
+  "metadata": {
+    "description": "Needs You: a session popup and a night autopilot for Claude Code.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "needs-you",
+      "description": "A popup that opens the exact Claude Code session waiting for you, and a night autopilot that takes the session's own recommended answer while you are away.",
+      "version": "0.1.0",
+      "author": {
+        "name": "NoBrainer Tech"
+      },
+      "source": "./"
+    }
+  ]
+}
