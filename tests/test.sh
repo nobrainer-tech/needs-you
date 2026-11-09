@@ -204,6 +204,18 @@ expect ap-off-popup "] Question after autopilot" 1
 check ap-rejects-bad-time "exit=$?" "exit=2" 1
 check ap-doctor "$("$AP" doctor)" "ok       jq" 1
 
+# No record, no answer: when the decision log cannot be written, autopilot does
+# not answer for the owner and the usual popup shows instead.
+"$AP" on 23:59 >/dev/null
+chmod 400 "$HOME/.claude/needs-you/decisions.jsonl"
+before=$(wc -l < "$HOME/.claude/needs-you/decisions.jsonl")
+out=$(fire "Question when the log is read-only"); sleep 2
+chmod 600 "$HOME/.claude/needs-you/decisions.jsonl"
+check ap-unlogged-no-deny "$out" "permissionDecision" 0
+expect ap-unlogged-popup "] Question when the log is read-only" 1
+check ap-unlogged-log-unchanged "$(wc -l < "$HOME/.claude/needs-you/decisions.jsonl")" "$before" 1
+"$AP" off >/dev/null
+
 # A failed write is reported, not hidden behind "Autopilot OFF".
 "$AP" on 23:59 >/dev/null
 chmod 500 "$HOME/.claude/needs-you"

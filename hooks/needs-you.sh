@@ -84,14 +84,17 @@ if [ "$EVENT" = PreToolUse ] && [ "$TOOL" != ExitPlanMode ] &&
     HOW="Do not end the turn with a question. Act on your recommended answer now ($DECISION), then finish the turn without a question."
   fi
   REASON="Autopilot is on until $UNTIL: the owner is away and will not answer. $HOW Never decide these yourself: logins or passwords, payments or purchases, merging, pushing or deploying, publishing or sending anything to other people, deleting data, irreversible production changes, granting permissions. For such a step: skip it, finish the rest and leave the question in your final message. This decision is logged for the owner's morning report."
-  mkdir -p "$DATA"
-  jq -nc --argjson ts "$NOW" --arg time "$(date '+%F %H:%M')" --arg session "$SID" \
-    --arg title "$TITLE" --arg tool "$TOOL" --arg decision "$DECISION" \
-    '{ts:$ts,time:$time,session:$session,title:$title,tool:$tool,decision:$decision}' \
-    >> "$DATA/decisions.jsonl" 2>/dev/null
-  jq -n --arg r "$REASON" \
-    '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"deny",permissionDecisionReason:$r}}'
-  exit 0
+  # Answer for the owner only when the decision is on record. If the log cannot
+  # be written, fall through: the owner gets the usual popup instead.
+  mkdir -p "$DATA" 2>/dev/null
+  if jq -nc --argjson ts "$NOW" --arg time "$(date '+%F %H:%M')" --arg session "$SID" \
+       --arg title "$TITLE" --arg tool "$TOOL" --arg decision "$DECISION" \
+       '{ts:$ts,time:$time,session:$session,title:$title,tool:$tool,decision:$decision}' \
+       2>/dev/null >> "$DATA/decisions.jsonl"; then
+    jq -n --arg r "$REASON" \
+      '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"deny",permissionDecisionReason:$r}}'
+    exit 0
+  fi
 fi
 
 # --- Needs You -------------------------------------------------------------

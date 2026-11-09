@@ -108,6 +108,8 @@ Three things to know before you trust it with a night:
   did next is in that session.
 - It picks what the session itself recommended. It does not judge whether the
   recommendation is right.
+- No record, no answer: if a decision cannot be written to the log, autopilot
+  does not answer and you get the popup instead.
 
 ## How it works
 
@@ -193,7 +195,7 @@ To change the popup text, set `NEEDS_YOU_TITLE`, `NEEDS_YOU_OPEN` and
 bash tests/test.sh
 ```
 
-60 checks run the hook and the command against stand-ins for the notifier, the
+63 checks run the hook and the command against stand-ins for the notifier, the
 dialog and `open`, in a temporary home folder. Nothing shows on screen.
 
 ---
